@@ -10,6 +10,7 @@ export default function Astapage(){
     const [isLoading, setIsLoading] = useState(true);
     const [listaCalciatori, setListaCalciatori] = useState([]);
     const [listaSorted, setListaSorted] = useState([]);
+    const [calciatoreSelezionato, setCalciatoreSelezionato] = useState({});
 
     useEffect(() => {
       getListoneGiocatori(handleSuccessGetLista, handleErrorGetLista)
@@ -28,6 +29,18 @@ export default function Astapage(){
 
     const filtraRuolo = (ruolo) => {
         setListaSorted(listaCalciatori.filter(calciatore => calciatore.Column2 === ruolo))
+    }
+
+    const selezionaGiocatore = (event, newValue) => {
+        setCalciatoreSelezionato(newValue)
+    }
+
+    const avviaAsta = () => {
+        if(Object.keys(calciatoreSelezionato).length > 0 && calciatoreSelezionato !== undefined){
+            navigate('/astaLive/'+calciatoreSelezionato.Column4, { state: {calciatore: calciatoreSelezionato} })
+        } else{
+            alert("Inserisci un giocatore per avviare l'asta echecazzo")
+        }    
     }
 
     return(
@@ -74,13 +87,14 @@ export default function Astapage(){
                     getOptionLabel={(option) => option.Column2 +" - "+ option.Column4 +" ---> "+ option.Column5}
                     renderInput={(params) => <TextField {...params} label="Calciatore"/>}
                     sx={{backgroundColor:'#fafafa'}}
-                />
+                    onChange={selezionaGiocatore}
+                />{console.log(calciatoreSelezionato)}
             </Grid>
             <Grid item xs={12} textAlign={'center'}>
                 <Button
                     variant='contained'
                     color='primary'
-                    onClick={() => navigate('/astaLive')} //asta per quel giocatore...
+                    onClick={avviaAsta}
                 >
                     Avvia asta
                 </Button>

@@ -8,6 +8,7 @@ import Difensori from './components/Difensori';
 import Centrocampisti from './components/Centrocampisti';
 import Attaccanti from './components/Attaccanti';
 import Astapage from './pages/Astapage';
+import AstaLive from './components/AstaLive';
 const socket = socketIO.connect('http://localhost:4000');
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path='/listone/centrocampisti' element={<Centrocampisti/>}/>
           <Route path='/listone/attaccanti' element={<Attaccanti/>}/>
           <Route path='/astaLive' element={<Astapage/>}/>
+          <Route path='/astaLive/:nomeCalciatore' element={<AstaLive/>}/>
           <Route path='*' element={<Homepage/>}/>
         </Routes>
       </div>

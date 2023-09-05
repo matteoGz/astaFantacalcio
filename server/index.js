@@ -5,6 +5,8 @@ const port = 4000;
 const cors = require('cors');
 const http = require('http').Server(app);
 
+const playerList = require('./model/playerList.json');
+
 app.use(cors());
 
 const socketIO = require('socket.io')(http, {
@@ -13,9 +15,15 @@ const socketIO = require('socket.io')(http, {
     }
 });
 
-app.get("/api" , (req, res) => {
+app.get("/api", (req, res) => {
     res.json({
         message: "API"
+    })
+})
+
+app.get("/listone", (req, res) => {
+    res.json({
+        lista: playerList
     })
 })
 

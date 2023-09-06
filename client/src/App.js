@@ -9,6 +9,7 @@ import Centrocampisti from './components/Centrocampisti';
 import Attaccanti from './components/Attaccanti';
 import Astapage from './pages/Astapage';
 import AstaLive from './components/AstaLive';
+import Loginpage from './pages/Loginpage';
 const socket = socketIO.connect('http://localhost:4000');
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
       <div socket={socket}>
         <Routes>
           <Route path='/' element={<Homepage/>}/>
+          <Route path='/login' element={<Loginpage/>}/>
           <Route path='/listone' element={<Listonepage/>}/>
           <Route path='/listone/portieri' element={<Portieri/>}/>
           <Route path='/listone/difensori' element={<Difensori/>}/>

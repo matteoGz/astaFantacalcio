@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
 
@@ -28,7 +28,48 @@ export default function AstaLive(){
             <Grid item xs={4}>
                 <Typography>Valore: <strong>{Math.round(calciatoreSelezionato.Column12/2)}</strong></Typography>
             </Grid>
-            
+            <Grid item xs={12}>
+                TIMER
+            </Grid>
+            <Grid item xs={12}>
+                Puntata e prezzo attuale
+            </Grid>
+            <Grid item xs={3}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => console.log('+1')}
+                >
+                    <strong>+ 1</strong>
+                </Button>
+            </Grid>
+            <Grid item xs={3}>
+                <Button
+                    variant="contained"
+                    color="success"
+                    onClick={() => console.log('+2')}
+                >
+                    <strong>+ 2</strong>
+                </Button>
+            </Grid>
+            <Grid item xs={3}>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => console.log('+5')}
+                >
+                    <strong>+ 5</strong>
+                </Button>
+            </Grid>
+            <Grid item xs={3}>
+                <Button
+                    variant="contained"
+                    color="warning"
+                    onClick={() => console.log('+10')}
+                >
+                    <strong>+ 10</strong>
+                </Button>
+            </Grid>
         </Grid>
     )
 }

@@ -37,7 +37,9 @@ export default function Astapage(){
 
     const avviaAsta = () => {
         if(Object.keys(calciatoreSelezionato).length > 0 && calciatoreSelezionato !== undefined){
-            navigate('/astaLive/'+calciatoreSelezionato.Column4, { state: {calciatore: calciatoreSelezionato} })
+            sessionStorage.getItem('auth') ?
+                navigate('/astaLive/'+calciatoreSelezionato.Column4, { state: {calciatore: calciatoreSelezionato} })
+            :   alert('Prima effettua login')
         } else{
             alert("Inserisci un giocatore per avviare l'asta echecazzo")
         }    
@@ -84,7 +86,9 @@ export default function Astapage(){
             <Grid item xs={12}>
                 <Autocomplete
                     options={listaSorted?.length > 0 ? listaSorted : listaCalciatori}
-                    getOptionLabel={(option) => option.Column2 +" - "+ option.Column4 +" ---> "+ option.Column5}
+                    getOptionLabel={(option) => option.Column2 +" - "+
+                                                (option.Column4).toUpperCase() +" ---> "+ 
+                                                option.Column5 +" (valore: "+ (Math.round(option.Column12/2)) +")" }
                     renderInput={(params) => <TextField {...params} label="Calciatore"/>}
                     sx={{backgroundColor:'#fafafa'}}
                     onChange={selezionaGiocatore}

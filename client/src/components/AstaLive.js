@@ -1,6 +1,8 @@
 import { Button, Grid, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import socketIO from 'socket.io-client';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 export default function AstaLive(){
     
@@ -8,6 +10,47 @@ export default function AstaLive(){
     
     let calciatoreSelezionato = location.state?.calciatore
     console.log(calciatoreSelezionato)
+
+    const [currentValueAsta, setCurrentValueAsta] = useState(0);
+    const [timer, setTimer] = useState(15);
+    const [userW, setUserW] = useState('');
+
+    useEffect(() => {
+        const decrementTimer = () => { if(timer > 0) setTimer(timer - 1) }
+    
+        const timerInterval = setInterval(decrementTimer, 1000)
+
+        return () => clearInterval(timerInterval)
+    }, [timer])
+    
+
+    useEffect(() => {
+        const socket = socketIO('http://localhost:4000');
+
+        socket.emit('join', calciatoreSelezionato?.Column4)
+
+        socket.on('asta', (newValue, user) => {
+            setCurrentValueAsta(newValue)
+            setUserW(user)
+        });
+
+        return () => socket.disconnect(); //Disconnect when component unmounts
+    }, [])
+
+    const handleAsta = (amount) => {
+        if(timer > 0){
+            console.log("entro e incremento di ", amount)
+            const socket = socketIO('http://localhost:4000');
+            socket.emit('asta', calciatoreSelezionato?.Column4, currentValueAsta+amount, sessionStorage.getItem('user')); //send new value asta
+            setCurrentValueAsta(currentValueAsta+amount);
+            setUserW(sessionStorage.getItem('user'))
+            setTimer(15)
+        } else{
+            alert('---TEMPO SCADUTO---'+<br></br>+'Calciatore assegnato a '+<strong>{userW}</strong>)
+        }
+    }
+    
+
 
     return(
         <Grid container spacing={2}>
@@ -29,16 +72,24 @@ export default function AstaLive(){
                 <Typography>Valore: <strong>{Math.round(calciatoreSelezionato.Column12/2)}</strong></Typography>
             </Grid>
             <Grid item xs={12}>
-                TIMER
+                <Typography variant="h4" textAlign={'center'}><AccessTimeIcon/> <strong>{timer}</strong></Typography>
             </Grid>
             <Grid item xs={12}>
-                Puntata e prezzo attuale
+                <Typography variant="h1" textAlign={'center'} sx={{backgroundColor:'#fafafa'}}>
+                    {currentValueAsta}
+                </Typography>
+            </Grid>
+            <Grid item xs={6}>
+                <Typography variant="h6">Sta vincendo: </Typography>
+            </Grid>
+            <Grid item xs={6}>
+                <Typography variant="h5"><strong>{userW}</strong></Typography>
             </Grid>
             <Grid item xs={3}>
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => console.log('+1')}
+                    onClick={() => handleAsta(1)}
                 >
                     <strong>+ 1</strong>
                 </Button>
@@ -47,7 +98,7 @@ export default function AstaLive(){
                 <Button
                     variant="contained"
                     color="success"
-                    onClick={() => console.log('+2')}
+                    onClick={() => handleAsta(2)}
                 >
                     <strong>+ 2</strong>
                 </Button>
@@ -56,7 +107,7 @@ export default function AstaLive(){
                 <Button
                     variant="contained"
                     color="secondary"
-                    onClick={() => console.log('+5')}
+                    onClick={() => handleAsta(5)}
                 >
                     <strong>+ 5</strong>
                 </Button>
@@ -65,7 +116,7 @@ export default function AstaLive(){
                 <Button
                     variant="contained"
                     color="warning"
-                    onClick={() => console.log('+10')}
+                    onClick={() => handleAsta(10)}
                 >
                     <strong>+ 10</strong>
                 </Button>

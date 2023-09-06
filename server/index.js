@@ -47,6 +47,22 @@ app.post("/api/login", (req, res) => {
 
 socketIO.on('connection', (socket) => {
     console.log(`⚡: ${socket.id} user just connected!`);
+    let currentValoreAsta = 0;
+
+    socket.emit('asta', currentValoreAsta); //send current highest valore asta
+
+    socket.on('join', (room) => {
+        socket.join(room);
+    })
+
+    socket.on('asta', (room, newValue) => {
+        console.log(room, newValue)
+        if(!isNaN(newValue) && newValue > currentValoreAsta){
+            currentValoreAsta = newValue;
+            socket.to(room).emit('asta', newValue); //send new highest value to users
+        }
+    })
+
     socket.on('disconnect', () => {
       console.log('🔥: A user disconnected');
     });

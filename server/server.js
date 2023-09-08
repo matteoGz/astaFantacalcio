@@ -48,23 +48,40 @@ app.post("/api/login", (req, res) => {
 socketIO.on('connection', (socket) => {
     console.log(`⚡: ${socket.id} user just connected!`);
     let currentValoreAsta = 0;
+    let userWinner = '';
+    let timer = 15;
+    let timerInterval;
 
-    socket.emit('asta', currentValoreAsta); //send current highest valore asta
+    const decrementTimer = () => {
+        if(timer > 0){
+            timer--;
+            socket.emit('timerUpdate', timer);
+        } else{
+            clearInterval(timerInterval);
+        }
+    }
+
+    timerInterval = setInterval(decrementTimer, 1000);
+    
 
     socket.on('join', (room) => {
         socket.join(room);
+        socket.emit('asta', currentValoreAsta, userWinner, timer); //send current highest valore asta
     })
 
-    socket.on('asta', (room, newValue) => {
-        console.log(room, newValue)
+    socket.on('asta', (room, newValue, newUser, newTimer) => {
+        console.log(room, newValue, newUser, newTimer)
         if(!isNaN(newValue) && newValue > currentValoreAsta){
             currentValoreAsta = newValue;
-            socket.to(room).emit('asta', newValue); //send new highest value to users
+            userWinner = newUser;
+            timer = newTimer;
+            socket.to(room).emit('asta', newValue, newUser, timer); //send new highest value to users
+            clearInterval(timerInterval);
         }
     })
 
     socket.on('disconnect', () => {
-      console.log('🔥: A user disconnected');
+        console.log('🔥: A user disconnected');
     });
 });
 

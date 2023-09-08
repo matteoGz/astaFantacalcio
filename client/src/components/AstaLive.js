@@ -3,31 +3,39 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import socketIO from 'socket.io-client';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import BackHandIcon from '@mui/icons-material/BackHand';
 
 export default function AstaLive(){
     
+    //alert from refreshing page
+    useEffect(() => {
+        const unloadCallback = (event) => {
+          event.preventDefault();
+          event.returnValue = "";
+          return "";
+        };
+      
+        window.addEventListener("beforeunload", unloadCallback);
+        return () => window.removeEventListener("beforeunload", unloadCallback);
+      }, []);
+
     const location = useLocation();
     
     let calciatoreSelezionato = location.state?.calciatore
     console.log(calciatoreSelezionato)
 
     const [currentValueAsta, setCurrentValueAsta] = useState(0);
-    const [timer, setTimer] = useState(15);
+    const [currentTimer, setCurrentTimer] = useState(15);
     const [userW, setUserW] = useState('');
+    const [isLasciato, setIsLasciato] = useState(false);
 
     useEffect(() => {
-        const decrementTimer = () => { if(timer > 0) setTimer(timer - 1) }
-    
-        const timerInterval = setInterval(decrementTimer, 1000)
 
-        return () => clearInterval(timerInterval)
-    }, [timer])
-    
-
-    useEffect(() => {
         const socket = socketIO('http://localhost:4000');
 
         socket.emit('join', calciatoreSelezionato?.Column4)
+
+        socket.on('timerUpdate', (timer) => setCurrentTimer(timer))
 
         socket.on('asta', (newValue, user) => {
             setCurrentValueAsta(newValue)
@@ -38,19 +46,18 @@ export default function AstaLive(){
     }, [])
 
     const handleAsta = (amount) => {
-        if(timer > 0){
+        if(currentTimer > 0){
             console.log("entro e incremento di ", amount)
             const socket = socketIO('http://localhost:4000');
-            socket.emit('asta', calciatoreSelezionato?.Column4, currentValueAsta+amount, sessionStorage.getItem('user')); //send new value asta
+            socket.emit('asta', calciatoreSelezionato?.Column4, currentValueAsta+amount, sessionStorage.getItem('user'), 15); //send new value asta
             setCurrentValueAsta(currentValueAsta+amount);
-            setUserW(sessionStorage.getItem('user'))
-            setTimer(15)
+            setUserW(sessionStorage.getItem('user'));
+            setCurrentTimer(15);
+            socket.on('timerUpdate', (timer) => setCurrentTimer(timer))
         } else{
-            alert('---TEMPO SCADUTO---'+<br></br>+'Calciatore assegnato a '+<strong>{userW}</strong>)
+            alert('---TEMPO SCADUTO---')
         }
     }
-    
-
 
     return(
         <Grid container spacing={2}>
@@ -72,7 +79,7 @@ export default function AstaLive(){
                 <Typography>Valore: <strong>{Math.round(calciatoreSelezionato.Column12/2)}</strong></Typography>
             </Grid>
             <Grid item xs={12}>
-                <Typography variant="h4" textAlign={'center'}><AccessTimeIcon/> <strong>{timer}</strong></Typography>
+                <Typography variant="h4" textAlign={'center'}><AccessTimeIcon/> <strong>{currentTimer}</strong></Typography>
             </Grid>
             <Grid item xs={12}>
                 <Typography variant="h1" textAlign={'center'} sx={{backgroundColor:'#fafafa'}}>
@@ -90,6 +97,7 @@ export default function AstaLive(){
                     variant="contained"
                     color="primary"
                     onClick={() => handleAsta(1)}
+                    disabled={isLasciato}
                 >
                     <strong>+ 1</strong>
                 </Button>
@@ -99,6 +107,7 @@ export default function AstaLive(){
                     variant="contained"
                     color="success"
                     onClick={() => handleAsta(2)}
+                    disabled={isLasciato}
                 >
                     <strong>+ 2</strong>
                 </Button>
@@ -108,6 +117,7 @@ export default function AstaLive(){
                     variant="contained"
                     color="secondary"
                     onClick={() => handleAsta(5)}
+                    disabled={isLasciato}
                 >
                     <strong>+ 5</strong>
                 </Button>
@@ -117,8 +127,19 @@ export default function AstaLive(){
                     variant="contained"
                     color="warning"
                     onClick={() => handleAsta(10)}
+                    disabled={isLasciato}
                 >
                     <strong>+ 10</strong>
+                </Button>
+            </Grid>
+            <Grid item xs={12} textAlign={'center'} marginTop={3}>
+                <Button
+                    variant="contained"
+                    color="error"
+                    startIcon={<BackHandIcon/>}
+                    onClick={() => setIsLasciato(true)}
+                >
+                    Lascio
                 </Button>
             </Grid>
         </Grid>

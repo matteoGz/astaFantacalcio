@@ -10,7 +10,7 @@ const playerList = require('./model/playerList.json');
 const userList = require('./model/nomiUtenti');
 
 app.use(cors({
-    origin: 'https://asta-fantacalcio2023.vercel.app/',
+    origin: 'https://asta-fantacalcio2023.vercel.app',
     methods: ["POST", "GET"],
     credentials: true
 }));

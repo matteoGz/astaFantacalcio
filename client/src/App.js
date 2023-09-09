@@ -10,7 +10,7 @@ import Attaccanti from './components/Attaccanti';
 import Astapage from './pages/Astapage';
 import AstaLive from './components/AstaLive';
 import Loginpage from './pages/Loginpage';
-const socket = socketIO.connect('https://asta-fantacalcio2023-api.vercel.app');
+const socket = socketIO.connect('https://asta-fantacalcio-api.adaptable.app');
 
 function App() {
   

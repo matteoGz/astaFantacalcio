@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export function getListoneGiocatori(handleSuccess, handleError){
-    axios.get('https://asta-fantacalcio2023-api.vercel.app/api/listone')
+    axios.get('https://asta-fantacalcio-api.adaptable.app/api/listone')
         .then(result => handleSuccess(result.data?.lista))
         .catch(error => handleError(error))
 }

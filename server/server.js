@@ -49,34 +49,33 @@ socketIO.on('connection', (socket) => {
     console.log(`⚡: ${socket.id} user just connected!`);
     let currentValoreAsta = 0;
     let userWinner = '';
-    let timer = 15;
-    let timerInterval;
+    // let timer = 15;
+    // let timerInterval;
 
-    const decrementTimer = () => {
-        if(timer > 0){
-            timer--;
-            socket.emit('timerUpdate', timer);
-        } else{
-            clearInterval(timerInterval);
-        }
-    }
+    // const decrementTimer = () => {
+    //     if(timer > 0){
+    //         timer--;
+    //         socket.emit('timerUpdate', timer);
+    //     } else{
+    //         clearInterval(timerInterval);
+    //     }
+    // }
 
-    timerInterval = setInterval(decrementTimer, 1000);
+    // timerInterval = setInterval(decrementTimer, 1000);
     
 
     socket.on('join', (room) => {
         socket.join(room);
-        socket.emit('asta', currentValoreAsta, userWinner, timer); //send current highest valore asta
+        socket.emit('asta', currentValoreAsta, userWinner); //send current highest valore asta
     })
 
-    socket.on('asta', (room, newValue, newUser, newTimer) => {
-        console.log(room, newValue, newUser, newTimer)
+    socket.on('asta', (room, newValue, newUser) => {
+        console.log(room, newValue, newUser)
         if(!isNaN(newValue) && newValue > currentValoreAsta){
             currentValoreAsta = newValue;
             userWinner = newUser;
-            timer = newTimer;
-            socket.to(room).emit('asta', newValue, newUser, timer); //send new highest value to users
-            clearInterval(timerInterval);
+            socket.to(room).emit('asta', newValue, newUser); //send new highest value to users
+            //clearInterval(timerInterval);
         }
     })
 

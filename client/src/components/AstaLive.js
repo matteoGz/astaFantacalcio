@@ -1,9 +1,10 @@
-import { Button, Grid, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import socketIO from 'socket.io-client';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import BackHandIcon from '@mui/icons-material/BackHand';
+import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
 
 export default function AstaLive(){
     
@@ -28,6 +29,9 @@ export default function AstaLive(){
     const [currentTimer, setCurrentTimer] = useState(15);
     const [userW, setUserW] = useState('');
     const [isLasciato, setIsLasciato] = useState(false);
+    const [isAssegnazione, setIsAssegnazione] = useState(false);
+
+    let currentUser = sessionStorage.getItem('user');
 
     useEffect(() => {
 
@@ -35,7 +39,7 @@ export default function AstaLive(){
 
         socket.emit('join', calciatoreSelezionato?.Column4)
 
-        socket.on('timerUpdate', (timer) => setCurrentTimer(timer))
+        //socket.on('timerUpdate', (timer) => setCurrentTimer(timer))
 
         socket.on('asta', (newValue, user) => {
             setCurrentValueAsta(newValue)
@@ -49,14 +53,48 @@ export default function AstaLive(){
         if(currentTimer > 0){
             console.log("entro e incremento di ", amount)
             const socket = socketIO('http://localhost:4000');
-            socket.emit('asta', calciatoreSelezionato?.Column4, currentValueAsta+amount, sessionStorage.getItem('user'), 15); //send new value asta
+            socket.emit('asta', calciatoreSelezionato?.Column4, currentValueAsta+amount, sessionStorage.getItem('user')); //send new value asta
             setCurrentValueAsta(currentValueAsta+amount);
             setUserW(sessionStorage.getItem('user'));
             setCurrentTimer(15);
-            socket.on('timerUpdate', (timer) => setCurrentTimer(timer))
+            //socket.on('timerUpdate', (timer) => setCurrentTimer(timer))
         } else{
             alert('---TEMPO SCADUTO---')
         }
+    }
+
+    const drawAssegnazione = () => {
+        return(
+            <Dialog
+                fullWidth
+                open={isAssegnazione}
+                onClose={() => setIsAssegnazione(false)}
+            >
+                <DialogTitle>Assegnazione calciatore</DialogTitle>
+                { currentValueAsta > 0 ?
+                    <DialogContent>
+                        Stai assegnando <strong>{calciatoreSelezionato.Column4}</strong> a <strong>{userW}</strong> per <strong>{currentValueAsta}</strong> crediti
+                    </DialogContent>
+                 :  <DialogContent><strong>Nessuno ha puntato</strong></DialogContent> }
+                <DialogActions>
+                { currentValueAsta > 0 ?
+                    <Button
+                        color="success"
+                        //assegnare su db collection 'squadre': UTENTE - CALCIATORE - PREZZO
+                    >
+                        Conferma
+                    </Button>
+                 :  <></> }
+                    <div style={{flex:'1 0'}}></div>
+                    <Button
+                        color="error"
+                        onClick={() => setIsAssegnazione(false)}
+                    >
+                        Chiudi
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        )
     }
 
     return(
@@ -138,10 +176,25 @@ export default function AstaLive(){
                     color="error"
                     startIcon={<BackHandIcon/>}
                     onClick={() => setIsLasciato(true)}
+                    sx={{width:"35%"}}
                 >
                     Lascio
                 </Button>
             </Grid>
+            { currentUser === "Uela" ?
+                <Grid item xs={12} textAlign={'center'} marginTop={3}>
+                    <Button
+                        variant="contained"
+                        color="inherit"
+                        startIcon={<MoveToInboxIcon/>}
+                        onClick={() => setIsAssegnazione(true)}
+                        sx={{width:"35%"}}
+                    >
+                        Assegna
+                    </Button>
+                    {drawAssegnazione()}
+                </Grid>
+             :  <></> }
         </Grid>
     )
 }

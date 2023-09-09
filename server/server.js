@@ -10,7 +10,7 @@ const playerList = require('./model/playerList.json');
 const userList = require('./model/nomiUtenti');
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://asta-fantacalcio2023.vercel.app/',
     methods: ["POST", "GET"],
     credentials: true
 }));
@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 const socketIO = require('socket.io')(http, {
     cors: {
-        origin: "http://localhost:3000"
+        origin: "https://asta-fantacalcio2023.vercel.app/"
     }
 });
 

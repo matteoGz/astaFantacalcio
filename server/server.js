@@ -1,10 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const port = 4000;
+const port = 443;
 
 const cors = require('cors');
-const http = require('http').Server(app);
+const https = require('https').Server(app);
 
 const playerList = require('./model/playerList.json');
 const userList = require('./model/nomiUtenti');
@@ -18,7 +18,7 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}))
 
-const socketIO = require('socket.io')(http, {
+const socketIO = require('socket.io')(https, {
     cors: {
         origin: '*'
     }
@@ -85,7 +85,7 @@ socketIO.on('connection', (socket) => {
     });
 });
 
-http.listen(port, () => {
+https.listen(port, () => {
     console.log("Server started on "+port);
 })
 

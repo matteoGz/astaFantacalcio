@@ -47,7 +47,7 @@ export default function AstaLive(){
         });
 
         return () => socket.disconnect(); //Disconnect when component unmounts
-    }, [])
+    }, [calciatoreSelezionato?.Column4])
 
     const handleAsta = (amount) => {
         if(currentTimer > 0){

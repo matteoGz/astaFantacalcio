@@ -10,7 +10,7 @@ import Attaccanti from './components/Attaccanti';
 import Astapage from './pages/Astapage';
 import AstaLive from './components/AstaLive';
 import Loginpage from './pages/Loginpage';
-const socket = socketIO.connect('https://asta-fantacalcio-api.adaptable.app');
+const socket = socketIO.connect('http://localhost:4000');
 
 function App() {
   

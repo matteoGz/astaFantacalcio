@@ -35,7 +35,7 @@ export default function AstaLive(){
 
     useEffect(() => {
 
-        const socket = socketIO('https://asta-fantacalcio-api.adaptable.app');
+        const socket = socketIO('http://localhost:4000');
 
         socket.emit('join', calciatoreSelezionato?.Column4)
 
@@ -52,7 +52,7 @@ export default function AstaLive(){
     const handleAsta = (amount) => {
         if(currentTimer > 0){
             console.log("entro e incremento di ", amount)
-            const socket = socketIO('https://asta-fantacalcio-api.adaptable.app');
+            const socket = socketIO('http://localhost:4000');
             socket.emit('asta', calciatoreSelezionato?.Column4, currentValueAsta+amount, sessionStorage.getItem('user')); //send new value asta
             setCurrentValueAsta(currentValueAsta+amount);
             setUserW(sessionStorage.getItem('user'));
